@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    JS YIELD
+</body>
+<script>
+    const runGen = function*() {
+        for (let i = 0; i < 3; i++) {
+            yield i
+        }
+    }
+    const gen = runGen();
+
+    console.log(gen.next());
+    console.log('HelloWorld');
+    console.log(gen.next());
+    console.log(gen.next());
+
+    const asyncFun = (i) => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => resolve(i * 2));
+        })
+    }
+
+    const runAsync = function*() {
+        for (let i = 0; i < 3; i++) {
+            var ret = yield asyncFun(i);
+            console.log(ret);
+        }
+    }
+    const gen2 = runAsync();
+    /*
+    gen2.next().value.then(ret => {
+        return gen2.next(ret).value;
+    }).then(ret2 => {
+        return gen2.next(ret2).value;
+    }).then((ret3) => {
+        return gen2.next(ret3);
+    });
+	*/
+    const asyncControl = (gen, data) => {
+        gen.next(data).value.then(ret => {
+            if (!gen.done) {
+                asyncControl(gen, ret)
+            }
+        })
+    }
+    asyncControl(runAsync());
+</script>
+
+</html>
